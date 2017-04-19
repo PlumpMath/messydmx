@@ -11,6 +11,9 @@
   "dependencies": {
     "artnet": "^1.2.1",
     "dmx": "github:wiedi/node-dmx",
-    "lodash": "^4.17.4"
+    "express": "^4.15.2",
+    "lodash": "^4.17.4",
+    "nedb": "^1.8.0",
+    "socket.io": "^1.7.3"
   }
 }

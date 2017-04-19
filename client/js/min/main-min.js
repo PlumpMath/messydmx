@@ -1,0 +1,1 @@
+$(function(){var o=io("localhost:3000");window.socket=o,o.emit("echo",{data:"ho"}),o.on("error",console.error.bind(console)),o.on("message",console.log.bind(console))});

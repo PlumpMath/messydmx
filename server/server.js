@@ -1,68 +1,91 @@
-var _ = require('lodash');
-var Helpers = require('./Helpers.js');
-var Queue = require('./Queue.js');
+var http = require('http');
+var path = require('path');
+var express = require('express');
+var app = express();
+var Datastore = require('nedb');
+var db = new Datastore({ filename: './dbfile', autoload: true });
 
-var options = {
-      host: '192.168.1.240'
+var DMX = require('dmx');
+var A = DMX.Animation;
+
+function setupSocket() {
+  global.io = require('socket.io')(server);
+
+  io.on('connection', (socket) => {
+		console.log('connect ' + socket.id);
+
+		socket.on('echo', function (data) {
+			console.log("oh we got data!");
+			console.log(data);
+			console.log("echoing back data!");
+			socket.emit('message', data); // send to just the person who responded
+		});
+
+		socket.on('broadcast', function (data) {
+			console.log("oh we got data!");
+			console.log(data);
+			console.log("broadcasting data!");
+			socket.broadcast.emit('message', data); // send to everyone
+		});
+
+		socket.on('log', function (data) {
+			console.log("oh we got data!");
+			db.insert(data.entry, function (err, newDoc) {   // Callback is optional
+				console.log(newDoc);
+			});
+		});
+
+		socket.on('getClicks', function (data) {
+      db.find({ 'type': 'click' }, function(err, docs) {
+        var data = {};
+        data.cursors = docs;
+        console.log(docs);
+			  socket.emit('sendClicks', data); // send to just the person who responded
+      });
+		});
+
+		socket.on('getPaths', function (data) {
+      db.find({ 'type': 'path' }, function(err, docs) {
+        var data = {};
+				data.paths = docs;
+			  socket.emit('sendPaths', data); // send to just the person who responded
+      });
+		});
+
+		socket.on('disconnect', () => console.log('disconnect ' + socket.id));
+
+  });
+
 }
 
-var artnet = require('artnet')(options);
-var queue = new Queue({
-  'artnet': artnet
+function setupServer() {
+  global.server = http.createServer(app);
+
+  server.listen(process.env.PORT || 3000, function() {
+    console.log("Listening on %j", server.address());
+  });
+}
+
+function setupDmx() {
+  global.dmx = new DMX();
+  global.universe = dmx.addUniverse('demo', 'artnet', '192.168.1.240')
+}
+
+/************** MAIN *************/
+
+app.get('/', function(req, res){
+  res.sendFile(path.resolve(__dirname + 'client/index.html'));
 });
 
-// set channel 1 to 255 and disconnect afterwards.
+if (require.main === module) {
 
+  setupServer();
+  setupSocket();
+  setupDmx();
 
-//_.each(channels, function(c) {
-  //artnet.set(c, 255, function (err, res) {
-  //});
-  //console.log(c);
-//});
-
-console.log(Helpers);
-
-//queue.setChannels(channels, 255);
-var fadeUpA = function(channels) {
-	queue.fadeTo({
-		'channels' : channels,
-		'levelFrom': 1,
-		'levelTo': 200,
-		'duration': 200,
-		'callback': function() {
-			console.log("fadeUpADone");
-			fadeDownA(channels);
-		}
-	});
 }
-var fadeDownA = function(channels) {
-	queue.fadeTo({
-		'channels' : channels,
-		'levelFrom': 200,
-		'levelTo': 1,
-		'duration': 2000,
-		'callback': function() {
-			console.log("fadeDownADone");
-		}
-	});
-}
-/*queue.fadeTo({
-	'channels' : [13,14,15,16,17,18,19,20,21,22,23,24],
-	'levelFrom': 255,
-	'levelTo': 5,
-	'duration': 4000
-});*/
-//queue.config.artnet.set(1, Helpers.generateArr(255, channels.length));
 
 
-//fadeUpA();
-var channels = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24]; // hardcode this
 
-var count = 1;
-setInterval(function() {
-	count = ((count+1) % 23);
-	var thisc = [_.sample(channels)];
-	thisc = [channels[count]];
-	console.log(thisc);
-	fadeUpA(thisc);
-}, 200);
+
+
