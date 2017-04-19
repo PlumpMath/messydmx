@@ -6,7 +6,6 @@ var Datastore = require('nedb');
 var db = new Datastore({ filename: './dbfile', autoload: true });
 
 var DMX = require('dmx');
-var A = DMX.Animation;
 
 function setupSocket() {
   global.io = require('socket.io')(server);
@@ -67,6 +66,7 @@ function setupServer() {
 }
 
 function setupDmx() {
+  global.A = DMX.Animation;
   global.dmx = new DMX();
   global.universe = dmx.addUniverse('demo', 'artnet', '192.168.1.240')
 }
