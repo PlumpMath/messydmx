@@ -10,32 +10,27 @@
     <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.3/socket.io.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/snap.svg/0.5.1/snap.svg-min.js"></script>
     <script src="//unpkg.com/vue@2.2.6/dist/vue.js"></script>
+    <script src="./js/Lights.js"></script>
     <script src="./js/main.js"></script>
 	</head>
   <body>
-    <div id="wrapper">
-      <div id="pageimg"></div>
-      <div id="editor">
-        <textarea :value="input" @input="update"></textarea>
-        <div v-html="compiledMarkdown"></div>
+    <div id="menu">
+      <div id="mousemode">
+				<input type="radio" name="mousemode" value="Add"> Add<br>
+				<input type="radio" name="mousemode" value="Activate" checked> Activate<br>
       </div>
     </div>
-    <div id="clicks">
-      <div v-for="item in cursors">
-        <div class="cursor" :style="'left: ' + item.pos.x + 'px; top: ' +  item.pos.y + 'px'">O</div>
+    <div id="wrapper">
+      <div id="floorplan">
+        <img src="assets/floorplan.png" />
+        <div id="lights">
+          <div v-for="(item, key) in lights">
+            <div :id="key" v-on:click="lightClick" class="light" :style="'left: ' + item.pos.x + 'px; top: ' +  item.pos.y + 'px'"></div>
+          </div>
+        </div>
       </div>
     </div>
 
-    <div id="paths">
-		
-			<svg width="2000px" height="2000px" id="svg">
-					<path fill="none" stroke="#444" stroke-width="5" stroke-linejoin="round" :d="svgPath(thisPath)" />
-				<g v-for="item in paths">
-					<path fill="none" stroke="#AAA" stroke-width="2" stroke-linejoin="round" :d="svgPath(item.path)" />
-				</g>
-			</svg>
-	
-    </div>
 
 	</body>
 </html>

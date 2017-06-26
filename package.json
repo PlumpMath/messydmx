@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "start": "node server/server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
@@ -14,6 +15,11 @@
     "express": "^4.15.2",
     "lodash": "^4.17.4",
     "nedb": "^1.8.0",
+    "osc": "^2.2.0",
+    "say": "^0.11.0",
     "socket.io": "^1.7.3"
+  },
+  "devDependencies": {
+    "sleep": "^5.1.1"
   }
 }

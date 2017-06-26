@@ -1,7 +1,12 @@
 "use strict"
 
+var _ = require('lodash');
 var DMX = require('dmx');
 var A = DMX.Animation;
+var Animations = require('./Animations');
+var say = require('say');
+
+var data_lights = require('./data_lights.json');
 
 var dmx = new DMX();
 var universe = dmx.addUniverse('demo', 'artnet', '192.168.1.240')
@@ -19,21 +24,66 @@ var y = new A()
   .delay(500);
 
 
-x.run(universe)
-y.run(universe, function(e) {
-  console.log("y is done");
-})
+var channels = _.range(1, 26);
+var dmxcounter = 1;
+var dmxmax = 25;
 
-/*var on = false;
-setInterval(function(){
-  if(on){
-    on = false;
-    universe.updateAll(0);
-    console.log("off");
-  }else{
-    on = true;
-    universe.updateAll(250);
-    console.log("on");
-  }
-}, 1000);
-*/
+_.each(data_lights.lights, function(v, k) {
+	console.log(k.split("LIGHT-")[1]);
+	console.log(v);
+});
+
+var lightcounter = 0;
+var lightmax = 17;
+
+function lightToDmx(lightn) {
+	return data_lights.lights["LIGHT-" + lightn].dmx.channel;
+}
+
+function lightsInSequence() {
+	setInterval(function(){
+		var thisc = [24];
+		var thisc = _.sampleSize(channels, 4);
+		var dmxc = lightToDmx(lightcounter);
+		var thisc = [dmxcounter];
+		var thisc = [dmxc]
+		//say.speak(thisc.join(", "));
+		say.speak("light " + lightcounter + " channel " + dmxc, 'Ava', 0.5);
+
+		Animations.onOff(thisc).run(universe);
+
+		if(dmxcounter++ >= dmxmax) dmxcounter = 1;
+		if(lightcounter++ >= lightmax) lightcounter = 0;
+
+	}, 2000); 
+}
+
+function randomLights() {
+	var lights = _.range(0, 18);
+	setInterval(function(){
+		var thisLights = _.sampleSize(lights, 3);
+		var thisChannels = _.map(thisLights, lightToDmx);
+
+		say.speak(thisLights.join(", "), 'Ava', 1);
+
+		Animations.onOff(thisChannels).run(universe);
+
+	}, 500); 
+}
+
+function randomSetLights() {
+	var lights = _.range(0, 18);
+	console.log("wft");
+	_.each(lights, function(lg) {
+		var thisC = lightToDmx(lg);
+
+		console.log("LIGHT-" + lg + " : CH-" + thisC);
+
+		var op = {}; op[thisC] = _.random(10, 150);
+		universe.update(op);
+	});
+}
+
+//lightsInSequence();
+randomLights();
+//randomSetLights();

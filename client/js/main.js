@@ -10,6 +10,7 @@ $(function () {
   socket.on('error', console.error.bind(console));
   socket.on('message', console.log.bind(console));
 
+  Lights.docReady();
 
 
 });

@@ -32,17 +32,23 @@ body {
   align-items: center;
 }
 
-#pageimg {
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-color: white;
-  width: 50vmin;
-  height: 50vmin;
-
+#floorplan {
+  position: relative;
 }
 
-.cursor {
+#floorplan img {
+  width: 80vw;
+  max-width: 90vmin;
+  max-height: 90vmin;
+}
+
+.light {
   position: absolute;
+	width: 20px;
+	height: 20px;
+	margin-top: -10px;
+	margin-left: -10px;
+	background-color: blue;
 }
 
 .pt {
