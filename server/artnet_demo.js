@@ -30,7 +30,11 @@ function setlight(lightno, lightlevel, cb) {
 }
 
 
-
 for(var i = 0; i <= 17; i++) {
-  setlight(i, 255);
+  setlight(i, 0);
+  sleep.msleep(100);
+}
+for(var i = 0; i <= 17; i++) {
+  setlight(i, 0);
+  sleep.msleep(100);
 } 

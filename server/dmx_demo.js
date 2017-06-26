@@ -84,6 +84,19 @@ function randomSetLights() {
 	});
 }
 
+function allLightsOn(turnOnBool) {
+	var lights = _.range(0, 18);
+	_.each(lights, function(lg) {
+		var thisC = lightToDmx(lg);
+		console.log("LIGHT-" + lg + " : CH-" + thisC);
+		var op = {}; 
+    op[thisC] = turnOnBool ? 255 : 0;
+		universe.update(op);
+	});
+}
+
 //lightsInSequence();
-randomLights();
+//randomLights();
 //randomSetLights();
+allLightsOn(true);
+//allLightsOn(false);
